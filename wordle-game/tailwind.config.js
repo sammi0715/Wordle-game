@@ -5,7 +5,13 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        wordleGreen: '#6AAA64',
+        wordleYellow: '#D2B458',
+        wordleGray: '#787C7E',
+      },
+    },
   },
   plugins: [],
 }

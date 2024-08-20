@@ -55,7 +55,7 @@ function reducer(state, action) {
         for (let i = 0; i < 5; i++) {
           const letter = newGrid[state.currentRow][i].letter;
           if (letter === answer[i]) {
-            newGrid[state.currentRow][i].color = "#6AAA64";
+            newGrid[state.currentRow][i].color = "bg-wordleGreen";
             letterCount[letter]--;
           } else {
             isCorrect = false;
@@ -63,12 +63,12 @@ function reducer(state, action) {
         }
         for (let i = 0; i < 5; i++) {
           const letter = newGrid[state.currentRow][i].letter;
-          if (newGrid[state.currentRow][i].color !== "#6AAA64") {
+          if (newGrid[state.currentRow][i].color !== "bg-wordleGreen") {
             if (letterCount[letter] && letterCount[letter] > 0) {
-              newGrid[state.currentRow][i].color = "#D2B458";
+              newGrid[state.currentRow][i].color = "bg-wordleYellow";
               letterCount[letter]--;
             } else {
-              newGrid[state.currentRow][i].color = "#787C7E";
+              newGrid[state.currentRow][i].color = "bg-wordleGray";
             }
           }
         }
@@ -122,11 +122,9 @@ export default function WordleGame() {
             {row.map((cell, colIndex) => (
               <div
                 key={colIndex}
-                className="w-16 h-16 flex items-center justify-center border-2 border-gray-300 text-3xl font-bold"
-                style={{
-                  backgroundColor: cell.color,
-                  color: cell.color ? "white" : "black",
-                }}
+                className={`w-16 h-16 flex items-center justify-center border-2 border-gray-300 text-3xl font-bold ${
+                  cell.color
+                } ${cell.color ? "text-white" : "text-black"}`}
               >
                 {cell.letter}
               </div>
