@@ -1,6 +1,5 @@
 import React, { useReducer } from "react";
-
-const initialState = {
+const initialState = () => ({
   grid: Array(6)
     .fill("")
     .map(() => Array(5).fill({ letter: "", color: "" })),
@@ -8,7 +7,7 @@ const initialState = {
   currentCol: 0,
   status: "playing",
   answer: "REACT",
-};
+});
 
 function reducer(state, action) {
   switch (action.type) {
@@ -55,7 +54,7 @@ function reducer(state, action) {
         for (let i = 0; i < 5; i++) {
           const letter = newGrid[state.currentRow][i].letter;
           if (letter === answer[i]) {
-            newGrid[state.currentRow][i].color = "bg-wordleGreen";
+            newGrid[state.currentRow][i].color = "bg-wordle-green";
             letterCount[letter]--;
           } else {
             isCorrect = false;
@@ -63,12 +62,12 @@ function reducer(state, action) {
         }
         for (let i = 0; i < 5; i++) {
           const letter = newGrid[state.currentRow][i].letter;
-          if (newGrid[state.currentRow][i].color !== "bg-wordleGreen") {
+          if (newGrid[state.currentRow][i].color !== "bg-wordle-green") {
             if (letterCount[letter] && letterCount[letter] > 0) {
-              newGrid[state.currentRow][i].color = "bg-wordleYellow";
+              newGrid[state.currentRow][i].color = "bg-wordle-yellow";
               letterCount[letter]--;
             } else {
-              newGrid[state.currentRow][i].color = "bg-wordleGray";
+              newGrid[state.currentRow][i].color = "bg-wordle-gray";
             }
           }
         }
@@ -86,13 +85,16 @@ function reducer(state, action) {
         };
       }
       return state;
+    case "RESET":
+      return initialState();
+
     default:
       return state;
   }
 }
 
 export default function WordleGame() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState());
 
   const handleKeyDown = (event) => {
     if (event.key === "Backspace") {
@@ -115,18 +117,18 @@ export default function WordleGame() {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col items-center justify-center min-h-screen">
       <div className="grid grid-rows-6 justify-center gap-[5px]">
         {state.grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-5 gap-[5px]">
-            {row.map((cell, colIndex) => (
+            {row.map((letterBox, colIndex) => (
               <div
                 key={colIndex}
                 className={`w-16 h-16 flex items-center justify-center border-2 border-gray-300 text-3xl font-bold ${
-                  cell.color
-                } ${cell.color ? "text-white" : "text-black"}`}
+                  letterBox.color
+                } ${letterBox.color ? "text-white" : "text-black"}`}
               >
-                {cell.letter}
+                {letterBox.letter}
               </div>
             ))}
           </div>
@@ -142,6 +144,15 @@ export default function WordleGame() {
           Game Over :(
         </div>
       )}
+      <button
+        className="mt-4 px-4 py-2 bg-blue-900 text-white font-bold rounded"
+        onClick={(event) => {
+          dispatch({ type: "RESET" });
+          event.target.blur();
+        }}
+      >
+        Reset
+      </button>
     </div>
   );
 }
