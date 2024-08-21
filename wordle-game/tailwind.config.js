@@ -7,9 +7,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        wordleGreen: '#6AAA64',
-        wordleYellow: '#D2B458',
-        wordleGray: '#787C7E',
+        'wordle-green': '#6AAA64',
+        'wordle-yellow': '#D2B458',
+        'wordle-gray': '#787C7E',
       },
     },
   },
