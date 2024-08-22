@@ -1,16 +1,36 @@
-import React, { useReducer } from "react";
-const initialState = () => ({
+import React, { useEffect, useReducer } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebaseConfig";
+
+async function getRandomWord() {
+  const wordsCollection = collection(db, "words");
+  const wordSnapshot = await getDocs(wordsCollection);
+  const wordList = wordSnapshot.docs.map((doc) => doc.data().value);
+
+  const randomIndex = Math.floor(Math.random() * wordList.length);
+  const randomWord = wordList[randomIndex].toUpperCase();
+  console.log(randomWord);
+  return randomWord;
+}
+
+const initialState = (answer = "") => ({
   grid: Array(6)
     .fill("")
     .map(() => Array(5).fill({ letter: "", color: "" })),
   currentRow: 0,
   currentCol: 0,
   status: "playing",
-  answer: "REACT",
+  answer,
 });
 
 function reducer(state, action) {
   switch (action.type) {
+    case "SET_ANSWER":
+      return {
+        ...state,
+        answer: action.payload,
+      };
+
     case "ADD_LETTER":
       if (state.status === "playing" && state.currentCol < 5) {
         const newGrid = [...state.grid];
@@ -86,7 +106,7 @@ function reducer(state, action) {
       }
       return state;
     case "RESET":
-      return initialState();
+      return initialState(action.payload);
 
     default:
       return state;
@@ -95,6 +115,13 @@ function reducer(state, action) {
 
 export default function WordleGame() {
   const [state, dispatch] = useReducer(reducer, initialState());
+  useEffect(() => {
+    async function fetchWord() {
+      const randomWord = await getRandomWord();
+      dispatch({ type: "SET_ANSWER", payload: randomWord });
+    }
+    fetchWord();
+  }, []);
 
   const handleKeyDown = (event) => {
     if (event.key === "Backspace") {
@@ -109,7 +136,7 @@ export default function WordleGame() {
       }
     }
   };
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -146,8 +173,9 @@ export default function WordleGame() {
       )}
       <button
         className="mt-4 px-4 py-2 bg-blue-900 text-white font-bold rounded"
-        onClick={(event) => {
-          dispatch({ type: "RESET" });
+        onClick={async (event) => {
+          const newWord = await getRandomWord();
+          dispatch({ type: "RESET", payload: newWord });
           event.target.blur();
         }}
       >
